@@ -1,0 +1,46 @@
+- hosts: web
+  become: yes
+  tasks:
+  - name: "install nginx"
+    apt:
+      name: nginx
+      state: latest
+      update_cache: yes
+
+  - name: "create www directory"
+    file:
+      path: /var/www/{{ domain }}
+      state: directory
+      mode: '0775'
+
+  - name: delete default nginx site
+    file:
+      path: /etc/nginx/sites-enabled/default
+      state: absent
+    notify: restart nginx
+
+  - name: "copy custom config"
+    copy:
+      src: ./nginx/nginx.conf 
+      dest: /etc/nginx/
+    notify: restart nginx
+
+  - name: copy nginx site.conf
+    template:
+      src: ./nginx/templates/site.conf.j2
+      dest: /etc/nginx/sites-enabled/{{ domain }}
+      owner: root
+      group: root
+      mode: '0644'
+    notify: restart nginx
+
+  - name: "copy website"
+    copy:
+      src: ./nginx/site/
+      dest: /var/www/{{ domain }}
+        
+  handlers:
+    - name: restart nginx
+      service:
+        name: nginx
+        state: restarted

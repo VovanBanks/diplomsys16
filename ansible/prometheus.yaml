@@ -1,0 +1,146 @@
+---
+- hosts: prometheus
+  tasks:
+    - name: Create group
+      group:
+        name: prometheus
+        state: present
+
+    - name: Add user to remote hosts
+      user:
+        name: prometheus
+        groups: prometheus
+        state: present
+
+    - name: Create a directory "/tmp/prometheus" if it does not exist
+      file:
+        path: /tmp/prometheus
+        state: directory
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: taskdownload
+      ansible.builtin.unarchive:
+        src: https://github.com/prometheus/prometheus/releases/download/v2.28.1/prometheus-2.28.1.linux-amd64.tar.gz
+        dest: /tmp/prometheus
+        remote_src: yes
+
+    - name: Create a directory "/etc/prometheus" if it does not exist
+      file:
+        path: /etc/prometheus
+        state: directory
+        owner: prometheus
+        group: prometheus
+        mode: 0775
+
+    - name: Create a directory "/var/lib/prometheus" if it does not exist
+      file:
+        path: /var/lib/prometheus
+        state: directory
+        owner: prometheus
+        group: prometheus
+        mode: 0775
+
+    - name: Copy prometheus  file to /usr/local/bin/
+      copy:
+        src: /tmp/prometheus/prometheus-2.28.1.linux-amd64/prometheus
+        dest: /usr/local/bin/
+        remote_src: yes
+
+    - name: Copy promtool file to /usr/local/bin/
+      copy:
+        src: /tmp/prometheus/prometheus-2.28.1.linux-amd64/promtool
+        dest: /usr/local/bin/
+        remote_src: yes
+
+    - name: Copy console_libraries file to /etc/prometheus
+      copy:
+        src: /tmp/prometheus/prometheus-2.28.1.linux-amd64/console_libraries
+        dest: /etc/prometheus
+        remote_src: yes
+
+    - name: Copy console file to /etc/prometheus
+      copy:
+        src: /tmp/prometheus/prometheus-2.28.1.linux-amd64/consoles
+        dest: /etc/prometheus
+        remote_src: yes
+
+    - name: Copy prometheus.yml file to /etc/prometheus
+      copy:
+        src: /tmp/prometheus/prometheus-2.28.1.linux-amd64/prometheus.yml
+        dest: /etc/prometheus
+        remote_src: yes
+
+    - name: chown -R prometheus:prometheus /etc/prometheus /var/lib/prometheus
+      command: chown -R prometheus:prometheus /etc/prometheus /var/lib/prometheus
+
+    - name: chown prometheus:prometheus /usr/local/bin/prometheus
+      command: chown prometheus:prometheus /usr/local/bin/prometheus
+
+    - name: chown prometheus:prometheus /usr/local/bin/promtool
+      command: chown prometheus:prometheus /usr/local/bin/promtool
+
+    - name: chmod +x /usr/local/bin/promtool
+      command: chmod +x /usr/local/bin/promtool
+
+    - name: chmod +x /usr/local/bin/prometheus
+      command: chmod +x /usr/local/bin/prometheus
+
+    - name: Touch prometheus.service
+      file:
+        path: "/etc/systemd/system/prometheus.service"
+        owner: root
+        group: root
+        mode: 0775
+        state: touch
+
+    - name: Add text with prometheus.service
+      lineinfile:
+        dest: /etc/systemd/system/prometheus.service
+        line: "{{ item }}"
+      with_items:
+        - "[Unit]"
+        - Description=Prometheus Service Netology Lesson 9.4
+        - After=network.target
+        - "[Service]"
+        - User=prometheus
+        - Group=prometheus
+        - Type=simple
+        - ExecStart=/usr/local/bin/prometheus \
+        - --config.file /etc/prometheus/prometheus.yml \
+        - --storage.tsdb.path /var/lib/prometheus/ \
+        - --web.console.templates=/etc/prometheus/consoles \
+        - --web.console.libraries=/etc/prometheus/console_libraries
+        - ExecReload=/bin/kill -HUP $MAINPID Restart=on-failure
+        - "[Install]"
+        - WantedBy=multi-user.target
+
+    - name: chown -R prometheus:prometheus /var/lib/prometheus
+      command: chown -R prometheus:prometheus /var/lib/prometheus
+
+    - name: add nginx hosts
+      lineinfile:
+        dest: /etc/prometheus/prometheus.yml
+        regexp: '^\s*- targets:'
+        line: '     - targets: [''10.0.3.3:9090'', ''10.0.1.3:9100'', ''10.0.2.3:9100'', ''10.0.1.3:4040'', ''10.0.2.3:4040'']'
+        backrefs: yes
+#########
+    - name: Systemd daemon_reload
+      systemd:
+        daemon_reload: yes
+
+    - name: Make sure a service is running
+      systemd:
+        state: started
+        name: prometheus
+
+
+    - name: enable service tuned and ensure it is not masked
+      systemd:
+        name: prometheus
+        enabled: yes
+        masked: no
+
+  become: yes
+  become_method: sudo

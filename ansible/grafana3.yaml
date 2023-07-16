@@ -1,0 +1,23 @@
+- hosts: grafana
+  become: yes
+  gather_facts: true
+  roles:
+    - role: cloudalchemy.grafana
+      vars:
+        grafana_version: latest
+        grafana_security:
+          admin_user: admin
+          admin_password: "admin" 
+        grafana_datasources:
+          - name: prometheus
+            type: prometheus
+            access: proxy
+            url: "http://{{ groups['prometheus'][0] }}:9090"
+            basicAuth: false
+        grafana_dashboards:
+        - dashboard_id: 11074 
+          revision_id: 9
+          datasource: prometheus
+        - dashboard_id: 15947 
+          revision_id: 1
+          datasource: prometheus

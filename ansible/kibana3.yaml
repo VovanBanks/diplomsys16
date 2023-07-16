@@ -1,0 +1,18 @@
+- hosts: kibana
+  become: yes
+  gather_facts: true
+  tasks:
+
+  - name: install kibana
+    apt:
+      deb: "https://mirror.yandex.ru/mirrors/elastic/7/pool/main/k/kibana/kibana-7.5.0-amd64.deb"
+
+  - name: copy kibana config file
+    copy:
+      src: kibana.yml
+      dest: /etc/kibana/kibana.yml
+
+  - name: Make sure a service is running
+    systemd:
+      state: started
+      name: kibana

@@ -1,0 +1,7 @@
+- hosts: web
+  #become: true
+  gather_facts: true
+  roles:
+    - cloudalchemy.node_exporter
+  vars:
+    node_exporter_version: latest

@@ -1,0 +1,31 @@
+- hosts: web
+  become: yes
+  gather_facts: true
+  roles:
+      - mbaran0v.prometheus-nginxlog-exporter
+  vars:
+    nginxlog_exporter_version: 1.9.2
+    #nginxlog_exporter_config_template: "{{ nginxlog_exporter_config_vars }}"
+    nginxlog_exporter_config_vars:
+      listen:
+        port: "{{ nginxlog_exporter_listen_port }}"
+        address: "{{ nginxlog_exporter_listen_address }}"
+      counsul:
+        enable: false
+      namespaces:
+        - name: nginx
+          format: "$remote_addr - $remote_user [$time_local] \"$request\" $status $body_bytes_sent \"$http_referer\" \"$http_user_agent\" \"$http_x_forwarded_for\"" 
+          source:
+            files:
+              - "/var/log/nginx/access.log"
+          histogram_buckets: [.005, .01, .025, .05, .1, .25, .5, 1, 2.5, 5, 10] 
+
+  hosts: web
+  become: yes
+  tasks:
+    - name: "Add nginxlog-exp user to adm group for the logs reading rights"
+      user:
+        name: "{{ nginxlog_exporter_user }}" 
+        state: present
+        groups: adm
+        append: yes

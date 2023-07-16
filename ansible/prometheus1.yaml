@@ -1,0 +1,32 @@
+---
+- hosts: prometheus
+  gather_facts: true
+  roles:
+  - cloudalchemy.prometheus
+  vars:
+    prometheus_version: latest
+
+    prometheus_targets:
+      node:
+      - targets:
+        - "{{ groups['web'][0] }}:9100"
+        - "{{ groups['web'][1] }}:9100"
+      nginx:
+      - targets:
+        - "{{ groups['web'][0] }}:4040"
+        - "{{ groups['web'][1] }}:4040"
+
+    prometheus_scrape_configs:
+      - job_name: "prometheus"
+        metrics_path: "/metrics"
+        static_configs:
+          - targets:
+              - "localhost:9090"
+      - job_name: "node"
+        file_sd_configs:
+          - files:
+              - "{{ prometheus_config_dir }}/file_sd/node.yml"
+      - job_name: "nginx"
+        file_sd_configs:
+          - files:
+              - "{{ prometheus_config_dir }}/file_sd/nginx.yml"
