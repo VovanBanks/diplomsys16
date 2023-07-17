@@ -122,6 +122,15 @@ VPC (**net_project** - для диплома):
 
 ![20](https://github.com/VovanBanks/diplomsys16/blob/master/img/20.PNG)
 
+**Доработка**:
+
+Решил проверить бьется ли с веб-серверами мой балансировщик:
+
+![26](https://github.com/VovanBanks/diplomsys16/blob/master/img/26.PNG)
+
+![27](https://github.com/VovanBanks/diplomsys16/blob/master/img/27.PNG)
+
+
 Возвращаемся к **grafana** и смотрим сбор метрик:
 
 ![21](https://github.com/VovanBanks/diplomsys16/blob/master/img/21.PNG)
@@ -135,6 +144,12 @@ VPC (**net_project** - для диплома):
 
 ![22](https://github.com/VovanBanks/diplomsys16/blob/master/img/22.PNG)
 
+**Доработка**:
+
+Смотрим логи **nginx**:
+
+![25](https://github.com/VovanBanks/diplomsys16/blob/master/img/25.PNG)
+
 Снимки дисков:
 
 ![23](https://github.com/VovanBanks/diplomsys16/blob/master/img/23.PNG)
@@ -142,6 +157,10 @@ VPC (**net_project** - для диплома):
 Создание расписания:
 
 ![24](https://github.com/VovanBanks/diplomsys16/blob/master/img/24.PNG)
+
+После доработки сделал расписание (снимки создаются раз в сутки в 03:00) через **terraform**:
+
+![28](https://github.com/VovanBanks/diplomsys16/blob/master/img/28.PNG)
 
 
 **Благодарю за обучение!**
