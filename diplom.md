@@ -130,6 +130,7 @@ VPC (**net_project** - для диплома):
 
 ![27](https://github.com/VovanBanks/diplomsys16/blob/master/img/27.PNG)
 
+![29](https://github.com/VovanBanks/diplomsys16/blob/master/img/29.PNG)
 
 Возвращаемся к **grafana** и смотрим сбор метрик:
 
@@ -158,7 +159,9 @@ VPC (**net_project** - для диплома):
 
 ![24](https://github.com/VovanBanks/diplomsys16/blob/master/img/24.PNG)
 
-После доработки сделал расписание (снимки создаются раз в сутки в 03:00) через **terraform**:
+После **доработки** сделал расписание (снимки создаются раз в сутки в 03:00) через **terraform**:
+
+![30](https://github.com/VovanBanks/diplomsys16/blob/master/img/30.PNG)
 
 ![28](https://github.com/VovanBanks/diplomsys16/blob/master/img/28.PNG)
 
