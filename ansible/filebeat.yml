@@ -26,6 +26,8 @@ filebeat.inputs:
   # Paths that should be crawled and fetched. Glob based paths.
   paths:
     - /var/log/*.log
+    - "/var/log/nginx/access.log"
+    - "/var/log/nginx/error.log"
     #- c:\programdata
 #============================= Filebeat modules ===============================
 
